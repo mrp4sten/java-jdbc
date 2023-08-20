@@ -20,7 +20,7 @@ public class ProductRepositoryImpl implements Repository<Product> {
   public List<Product> list() {
     List<Product> products = new ArrayList<>();
 
-    try (Connection connection = DBConnection.getInstance()) {
+    try (Connection connection = getConnection()) {
       String query = "SELECT * FROM products";
       try (PreparedStatement statement = connection.prepareStatement(query)) {
         ResultSet resultSet = statement.executeQuery();
