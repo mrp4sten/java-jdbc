@@ -36,11 +36,7 @@ public class ProductRepositoryImpl implements Repository<Product> {
       try (PreparedStatement statement = connection.prepareStatement(query)) {
         try (ResultSet resultSet = statement.executeQuery()) {
           while (resultSet.next()) {
-            Product product = new Product();
-            product.setId(resultSet.getLong("id"));
-            product.setName(resultSet.getString("name"));
-            product.setPrice(resultSet.getDouble("price"));
-            product.setRecordDate(resultSet.getDate("record_date"));
+            Product product = getProduct(resultSet);
 
             products.add(product);
           }
@@ -54,9 +50,24 @@ public class ProductRepositoryImpl implements Repository<Product> {
   }
 
   @Override
-  public Product byId() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'byId'");
+  public Product byId(Long id) {
+    Product product = null;
+    try (Connection connection = getConnection()) {
+      String query = "SELECT * FROM products where id = ?";
+      try (PreparedStatement statement = connection.prepareStatement(query)) {
+        statement.setLong(1, id);
+        try (ResultSet resultSet = statement.executeQuery()) {
+          if (resultSet.next()) {
+            product = getProduct(resultSet);
+          }
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return product;
+
   }
 
   @Override

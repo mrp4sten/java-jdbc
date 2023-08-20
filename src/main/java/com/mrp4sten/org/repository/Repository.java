@@ -5,7 +5,7 @@ import java.util.List;
 public interface Repository<T> {
   List<T> list();
 
-  T byId();
+  T byId(Long id);
 
   void save(T t);
 
