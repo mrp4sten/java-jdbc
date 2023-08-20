@@ -23,16 +23,15 @@ public class ProductRepositoryImpl implements Repository<Product> {
     try (Connection connection = getConnection()) {
       String query = "SELECT * FROM products";
       try (PreparedStatement statement = connection.prepareStatement(query)) {
-        try (ResultSet resultSet = statement.executeQuery()) {
-          while (resultSet.next()) {
-            Product product = new Product();
-            product.setId(resultSet.getLong("id"));
-            product.setName(resultSet.getString("name"));
-            product.setPrice(resultSet.getDouble("price"));
-            product.setRecordDate(resultSet.getDate("record_date"));
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next()) {
+          Product product = new Product();
+          product.setId(resultSet.getLong("id"));
+          product.setName(resultSet.getString("name"));
+          product.setPrice(resultSet.getDouble("price"));
+          product.setRecordDate(resultSet.getDate("record_date"));
 
-            products.add(product);
-          }
+          products.add(product);
         }
       }
     } catch (SQLException e) {
@@ -44,20 +43,8 @@ public class ProductRepositoryImpl implements Repository<Product> {
 
   @Override
   public Product byId() {
-    Product product = new Product();
-
-    try (Connection connection = getConnection()) {
-      String query = "SELECT * FROM products where id = ?";
-      try (PreparedStatement statement = connection.prepareStatement(query)) {
-        try(ResultSet resultSet = statement.executeQuery()) {
-          while 
-        }
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-
-    return product;
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'byId'");
   }
 
   @Override
