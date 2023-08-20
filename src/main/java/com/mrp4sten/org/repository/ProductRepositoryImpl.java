@@ -16,6 +16,17 @@ public class ProductRepositoryImpl implements Repository<Product> {
     return DBConnection.getInstance();
   }
 
+  private Product getProduct(ResultSet resultSet) throws SQLException {
+    Product product = new Product();
+
+    product.setId(resultSet.getLong("id"));
+    product.setName(resultSet.getString("name"));
+    product.setPrice(resultSet.getDouble("price"));
+    product.setRecordDate(resultSet.getDate("record_date"));
+
+    return product;
+  }
+
   @Override
   public List<Product> list() {
     List<Product> products = new ArrayList<>();
