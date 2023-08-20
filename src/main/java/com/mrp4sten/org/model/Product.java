@@ -15,6 +15,9 @@ public class Product {
     this.recordDate = recordDate;
   }
 
+  public Product() {
+  }
+
   public Long getId() {
     return id;
   }
