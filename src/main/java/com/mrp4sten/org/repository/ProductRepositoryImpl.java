@@ -37,7 +37,8 @@ public class ProductRepositoryImpl implements Repository<Product> {
     List<Product> products = new ArrayList<>();
 
     String query = "SELECT p.*, c.name AS category  FROM products AS p INNER JOIN categories as c ON (p.category_id = c.id)";
-    try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+    try (Connection connection = getConnection();
+        PreparedStatement statement = connection.prepareStatement(query)) {
       try (ResultSet resultSet = statement.executeQuery()) {
         while (resultSet.next()) {
           Product product = getProduct(resultSet);
@@ -56,7 +57,8 @@ public class ProductRepositoryImpl implements Repository<Product> {
   public Product byId(Long id) {
     Product product = null;
     String query = "SELECT p.*, c.name AS category FROM products AS p INNER JOIN categories as c ON (p.category_id = c.id) where p.id = ?";
-    try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+    try (Connection connection = getConnection();
+        PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setLong(1, id);
       try (ResultSet resultSet = statement.executeQuery()) {
         if (resultSet.next()) {
@@ -81,7 +83,8 @@ public class ProductRepositoryImpl implements Repository<Product> {
       query = "INSERT INTO products(name, price, category_id, record_date) VALUES(?,?,?,?)";
     }
 
-    try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+    try (Connection connection = getConnection();
+        PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setString(1, t.getName());
       statement.setDouble(2, t.getPrice());
       statement.setLong(3, t.getCategory().getId());
@@ -100,7 +103,8 @@ public class ProductRepositoryImpl implements Repository<Product> {
   @Override
   public void remove(Long id) {
     String query = "DELETE FROM products WHERE id=?";
-    try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+    try (Connection connection = getConnection();
+        PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setLong(1, id);
       statement.executeUpdate();
 
