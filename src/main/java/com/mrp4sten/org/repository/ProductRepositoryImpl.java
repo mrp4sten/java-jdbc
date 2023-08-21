@@ -68,14 +68,39 @@ public class ProductRepositoryImpl implements Repository<Product> {
 
   @Override
   public void save(Product t) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'save'");
+    boolean isUpdateProduct = t.getId() != null && t.getId() > 0;
+    String query = "";
+    if (isUpdateProduct) {
+      query = "UPDATE products SET name=?, price=? WHERE id=?";
+    } else {
+      query = "INSERT INTO products(name, price, record_date) VALUES(?,?,?)";
+    }
+
+    try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+      statement.setString(1, t.getName());
+      statement.setDouble(2, t.getPrice());
+
+      if (isUpdateProduct) {
+        statement.setLong(3, t.getId());
+      } else {
+        statement.setDate(3, t.getRecordDate());
+      }
+      statement.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
   public void remove(Long id) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'remove'");
+    String query = "DELETE FROM products WHERE id=?";
+    try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+      statement.setLong(1, id);
+      statement.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
 }
