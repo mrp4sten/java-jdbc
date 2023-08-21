@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 
+import com.mrp4sten.org.model.Category;
 import com.mrp4sten.org.model.Product;
 import com.mrp4sten.org.repository.ProductRepositoryImpl;
 import com.mrp4sten.org.repository.Repository;
@@ -23,13 +24,15 @@ public class ConnectionExample {
 
                 System.out.println("=== ADD PRODUCT ===");
                 java.util.Date date = new java.util.Date();
-                Product product = new Product(null, "Samsung s23", 16000.00, new Date(date.getTime()));
+                Category category = new Category();
+                category.setId(1L);
+                Product product = new Product(null, "Samsung s23 PRO", 16000.00, new Date(date.getTime()), category);
                 repository.save(product);
                 repository.list().forEach(System.out::println);
 
                 System.out.println("=== EDIT PRODUCT ===");
-                Product updateProduct = new Product(4L, "Samsung Galaxy s23", 16000.00,
-                        null);
+                Product updateProduct = new Product(4L, "Samsung Galaxy s23 PRO", 16000.00,
+                        null, category);
                 repository.save(updateProduct);
                 repository.list().forEach(System.out::println);
 

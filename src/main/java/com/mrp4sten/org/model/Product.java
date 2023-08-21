@@ -7,12 +7,14 @@ public class Product {
   private String name;
   private Double price;
   private Date recordDate;
+  private Category category;
 
-  public Product(Long id, String name, Double price, Date recordDate) {
+  public Product(Long id, String name, Double price, Date recordDate, Category category) {
     this.id = id;
     this.name = name;
     this.price = price;
     this.recordDate = recordDate;
+    this.category = category;
   }
 
   public Product() {
@@ -50,9 +52,18 @@ public class Product {
     this.recordDate = recordDate;
   }
 
+  public Category getCategory() {
+    return category;
+  }
+
+  public void setCategory(Category category) {
+    this.category = category;
+  }
+
   @Override
   public String toString() {
-    return "Product [id=" + id + ", name=" + name + ", price=" + price + ", recordDate=" + recordDate + "]";
+    return "Product [id=" + id + ", name=" + name + ", price=" + price + ", recordDate=" + recordDate + ", category="
+        + category.getName() + "]";
   }
 
 }

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mrp4sten.org.model.Category;
 import com.mrp4sten.org.model.Product;
 import com.mrp4sten.org.util.DBConnection;
 
@@ -23,6 +24,10 @@ public class ProductRepositoryImpl implements Repository<Product> {
     product.setName(resultSet.getString("name"));
     product.setPrice(resultSet.getDouble("price"));
     product.setRecordDate(resultSet.getDate("record_date"));
+    Category category = new Category();
+    category.setId(resultSet.getLong("category_id"));
+    category.setName(resultSet.getString("category"));
+    product.setCategory(category);
 
     return product;
   }
@@ -31,7 +36,7 @@ public class ProductRepositoryImpl implements Repository<Product> {
   public List<Product> list() {
     List<Product> products = new ArrayList<>();
 
-    String query = "SELECT * FROM products";
+    String query = "SELECT p.*, c.name AS category  FROM products AS p INNER JOIN categories as c ON (p.category_id = c.id)";
     try (PreparedStatement statement = getConnection().prepareStatement(query)) {
       try (ResultSet resultSet = statement.executeQuery()) {
         while (resultSet.next()) {
@@ -50,7 +55,7 @@ public class ProductRepositoryImpl implements Repository<Product> {
   @Override
   public Product byId(Long id) {
     Product product = null;
-    String query = "SELECT * FROM products where id = ?";
+    String query = "SELECT p.*, c.name AS category FROM products AS p INNER JOIN categories as c ON (p.category_id = c.id) where p.id = ?";
     try (PreparedStatement statement = getConnection().prepareStatement(query)) {
       statement.setLong(1, id);
       try (ResultSet resultSet = statement.executeQuery()) {
@@ -71,19 +76,20 @@ public class ProductRepositoryImpl implements Repository<Product> {
     boolean isUpdateProduct = t.getId() != null && t.getId() > 0;
     String query = "";
     if (isUpdateProduct) {
-      query = "UPDATE products SET name=?, price=? WHERE id=?";
+      query = "UPDATE products SET name=?, price=?, category_id=? WHERE id=?";
     } else {
-      query = "INSERT INTO products(name, price, record_date) VALUES(?,?,?)";
+      query = "INSERT INTO products(name, price, category_id, record_date) VALUES(?,?,?,?)";
     }
 
     try (PreparedStatement statement = getConnection().prepareStatement(query)) {
       statement.setString(1, t.getName());
       statement.setDouble(2, t.getPrice());
+      statement.setLong(3, t.getCategory().getId());
 
       if (isUpdateProduct) {
-        statement.setLong(3, t.getId());
+        statement.setLong(4, t.getId());
       } else {
-        statement.setDate(3, t.getRecordDate());
+        statement.setDate(4, t.getRecordDate());
       }
       statement.executeUpdate();
     } catch (SQLException e) {
