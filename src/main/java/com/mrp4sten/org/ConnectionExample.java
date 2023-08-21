@@ -12,8 +12,13 @@ public class ConnectionExample {
     public static void main(String[] args) {
         try {
             try (Connection connection = DBConnection.getInstance()) {
+
+                System.out.println("=== PRODUCT LIST ===");
                 Repository<Product> repository = new ProductRepositoryImpl();
-                repository.list().forEach(p -> System.out.println(p.getName()));
+                repository.list().forEach(System.out::println);
+
+                System.out.println("=== PRODUCT WITH ID 2 ===");
+                System.out.println(repository.byId(2L));
             }
         } catch (SQLException e) {
             e.printStackTrace();
