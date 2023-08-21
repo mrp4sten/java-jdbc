@@ -14,7 +14,7 @@ import com.mrp4sten.org.util.DBConnection;
 public class ProductRepositoryImpl implements Repository<Product> {
 
   private Connection getConnection() throws SQLException {
-    return DBConnection.getInstance();
+    return DBConnection.getConnection();
   }
 
   private Product getProduct(ResultSet resultSet) throws SQLException {
