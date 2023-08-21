@@ -31,15 +31,13 @@ public class ProductRepositoryImpl implements Repository<Product> {
   public List<Product> list() {
     List<Product> products = new ArrayList<>();
 
-    try (Connection connection = getConnection()) {
-      String query = "SELECT * FROM products";
-      try (PreparedStatement statement = connection.prepareStatement(query)) {
-        try (ResultSet resultSet = statement.executeQuery()) {
-          while (resultSet.next()) {
-            Product product = getProduct(resultSet);
+    String query = "SELECT * FROM products";
+    try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+      try (ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+          Product product = getProduct(resultSet);
 
-            products.add(product);
-          }
+          products.add(product);
         }
       }
     } catch (SQLException e) {
@@ -52,14 +50,12 @@ public class ProductRepositoryImpl implements Repository<Product> {
   @Override
   public Product byId(Long id) {
     Product product = null;
-    try (Connection connection = getConnection()) {
-      String query = "SELECT * FROM products where id = ?";
-      try (PreparedStatement statement = connection.prepareStatement(query)) {
-        statement.setLong(1, id);
-        try (ResultSet resultSet = statement.executeQuery()) {
-          if (resultSet.next()) {
-            product = getProduct(resultSet);
-          }
+    String query = "SELECT * FROM products where id = ?";
+    try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+      statement.setLong(1, id);
+      try (ResultSet resultSet = statement.executeQuery()) {
+        if (resultSet.next()) {
+          product = getProduct(resultSet);
         }
       }
     } catch (SQLException e) {
