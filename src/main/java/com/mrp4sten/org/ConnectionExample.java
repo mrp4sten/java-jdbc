@@ -11,10 +11,12 @@ import com.mrp4sten.org.repository.Repository;
 import com.mrp4sten.org.util.DBConnection;
 
 public class ConnectionExample {
-    public static void main(String[] args) {
-        try {
-            try (Connection connection = DBConnection.getInstance()) {
-
+    public static void main(String[] args) throws SQLException {
+        try (Connection connection = DBConnection.getInstance()) {
+            if (connection.getAutoCommit()) {
+                connection.setAutoCommit(false);
+            }
+            try {
                 System.out.println("=== PRODUCT LIST ===");
                 Repository<Product> repository = new ProductRepositoryImpl();
                 repository.list().forEach(System.out::println);
@@ -40,9 +42,12 @@ public class ConnectionExample {
                 System.out.println("=== REMOVE PRODUCT ===");
                 repository.remove(4L);
                 repository.list().forEach(System.out::println);
+
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 }

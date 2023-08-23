@@ -34,7 +34,7 @@ public class ProductRepositoryImpl implements Repository<Product> {
   }
 
   @Override
-  public List<Product> list() {
+  public List<Product> list() throws SQLException {
     List<Product> products = new ArrayList<>();
 
     String query = "SELECT p.*, c.name AS category  FROM products AS p INNER JOIN categories as c ON (p.category_id = c.id)";
@@ -47,15 +47,13 @@ public class ProductRepositoryImpl implements Repository<Product> {
           products.add(product);
         }
       }
-    } catch (SQLException e) {
-      e.printStackTrace();
     }
 
     return products;
   }
 
   @Override
-  public Product byId(Long id) {
+  public Product byId(Long id) throws SQLException {
     Product product = null;
     String query = "SELECT p.*, c.name AS category FROM products AS p INNER JOIN categories as c ON (p.category_id = c.id) where p.id = ?";
     try (Connection connection = getConnection();
@@ -66,16 +64,13 @@ public class ProductRepositoryImpl implements Repository<Product> {
           product = getProduct(resultSet);
         }
       }
-    } catch (SQLException e) {
-      e.printStackTrace();
     }
-
     return product;
 
   }
 
   @Override
-  public void save(Product t) {
+  public void save(Product t) throws SQLException {
     boolean isUpdateProduct = t.getId() != null && t.getId() > 0;
     String query = "";
     if (isUpdateProduct) {
@@ -97,21 +92,17 @@ public class ProductRepositoryImpl implements Repository<Product> {
         statement.setDate(5, t.getRecordDate());
       }
       statement.executeUpdate();
-    } catch (SQLException e) {
-      e.printStackTrace();
     }
   }
 
   @Override
-  public void remove(Long id) {
+  public void remove(Long id) throws SQLException {
     String query = "DELETE FROM products WHERE id=?";
     try (Connection connection = getConnection();
         PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setLong(1, id);
       statement.executeUpdate();
 
-    } catch (SQLException e) {
-      e.printStackTrace();
     }
   }
 
