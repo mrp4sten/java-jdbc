@@ -8,13 +8,15 @@ public class Product {
   private Double price;
   private Date recordDate;
   private Category category;
+  private String sku;
 
-  public Product(Long id, String name, Double price, Date recordDate, Category category) {
+  public Product(Long id, String name, Double price, Date recordDate, Category category, String sku) {
     this.id = id;
     this.name = name;
     this.price = price;
     this.recordDate = recordDate;
     this.category = category;
+    this.sku = sku;
   }
 
   public Product() {
@@ -60,10 +62,18 @@ public class Product {
     this.category = category;
   }
 
+  public String getSku() {
+    return sku;
+  }
+
+  public void setSku(String sku) {
+    this.sku = sku;
+  }
+
   @Override
   public String toString() {
     return "Product [id=" + id + ", name=" + name + ", price=" + price + ", recordDate=" + recordDate + ", category="
-        + category.getName() + "]";
+        + category + ", sku=" + sku + "]";
   }
 
 }
