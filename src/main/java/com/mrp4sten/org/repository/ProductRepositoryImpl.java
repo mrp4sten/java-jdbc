@@ -4,17 +4,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.mrp4sten.org.model.Category;
 import com.mrp4sten.org.model.Product;
-import com.mrp4sten.org.util.DBConnection;
 
 public class ProductRepositoryImpl implements Repository<Product> {
 
-  private Connection getConnection() throws SQLException {
-    return DBConnection.getConnection();
+  private Connection connection;
+
+  public ProductRepositoryImpl(Connection connection) {
+    this.connection = connection;
   }
 
   private Product getProduct(ResultSet resultSet) throws SQLException {
@@ -34,12 +36,11 @@ public class ProductRepositoryImpl implements Repository<Product> {
   }
 
   @Override
-  public List<Product> list() {
+  public List<Product> list() throws SQLException {
     List<Product> products = new ArrayList<>();
 
     String query = "SELECT p.*, c.name AS category  FROM products AS p INNER JOIN categories as c ON (p.category_id = c.id)";
-    try (Connection connection = getConnection();
-        PreparedStatement statement = connection.prepareStatement(query)) {
+    try (PreparedStatement statement = connection.prepareStatement(query)) {
       try (ResultSet resultSet = statement.executeQuery()) {
         while (resultSet.next()) {
           Product product = getProduct(resultSet);
@@ -47,35 +48,29 @@ public class ProductRepositoryImpl implements Repository<Product> {
           products.add(product);
         }
       }
-    } catch (SQLException e) {
-      e.printStackTrace();
     }
 
     return products;
   }
 
   @Override
-  public Product byId(Long id) {
+  public Product byId(Long id) throws SQLException {
     Product product = null;
     String query = "SELECT p.*, c.name AS category FROM products AS p INNER JOIN categories as c ON (p.category_id = c.id) where p.id = ?";
-    try (Connection connection = getConnection();
-        PreparedStatement statement = connection.prepareStatement(query)) {
+    try (PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setLong(1, id);
       try (ResultSet resultSet = statement.executeQuery()) {
         if (resultSet.next()) {
           product = getProduct(resultSet);
         }
       }
-    } catch (SQLException e) {
-      e.printStackTrace();
     }
-
     return product;
 
   }
 
   @Override
-  public void save(Product t) {
+  public Product save(Product t) throws SQLException {
     boolean isUpdateProduct = t.getId() != null && t.getId() > 0;
     String query = "";
     if (isUpdateProduct) {
@@ -84,8 +79,7 @@ public class ProductRepositoryImpl implements Repository<Product> {
       query = "INSERT INTO products(name, price, category_id, sku, record_date) VALUES(?,?,?,?,?)";
     }
 
-    try (Connection connection = getConnection();
-        PreparedStatement statement = connection.prepareStatement(query)) {
+    try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
       statement.setString(1, t.getName());
       statement.setDouble(2, t.getPrice());
       statement.setLong(3, t.getCategory().getId());
@@ -97,21 +91,26 @@ public class ProductRepositoryImpl implements Repository<Product> {
         statement.setDate(5, t.getRecordDate());
       }
       statement.executeUpdate();
-    } catch (SQLException e) {
-      e.printStackTrace();
+
+      if (t.getId() == null) {
+        try (ResultSet resultSet = statement.getGeneratedKeys()) {
+          if (resultSet.next()) {
+            t.setId(resultSet.getLong(1));
+          }
+        }
+      }
+
+      return t;
     }
   }
 
   @Override
-  public void remove(Long id) {
+  public void remove(Long id) throws SQLException {
     String query = "DELETE FROM products WHERE id=?";
-    try (Connection connection = getConnection();
-        PreparedStatement statement = connection.prepareStatement(query)) {
+    try (PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setLong(1, id);
       statement.executeUpdate();
 
-    } catch (SQLException e) {
-      e.printStackTrace();
     }
   }
 
