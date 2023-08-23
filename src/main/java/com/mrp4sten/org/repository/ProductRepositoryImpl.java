@@ -28,6 +28,7 @@ public class ProductRepositoryImpl implements Repository<Product> {
     category.setId(resultSet.getLong("category_id"));
     category.setName(resultSet.getString("category"));
     product.setCategory(category);
+    product.setSku(resultSet.getString("sku"));
 
     return product;
   }
@@ -78,9 +79,9 @@ public class ProductRepositoryImpl implements Repository<Product> {
     boolean isUpdateProduct = t.getId() != null && t.getId() > 0;
     String query = "";
     if (isUpdateProduct) {
-      query = "UPDATE products SET name=?, price=?, category_id=? WHERE id=?";
+      query = "UPDATE products SET name=?, price=?, category_id=?, sku=? WHERE id=?";
     } else {
-      query = "INSERT INTO products(name, price, category_id, record_date) VALUES(?,?,?,?)";
+      query = "INSERT INTO products(name, price, category_id, sku, record_date) VALUES(?,?,?,?,?)";
     }
 
     try (Connection connection = getConnection();
@@ -88,11 +89,12 @@ public class ProductRepositoryImpl implements Repository<Product> {
       statement.setString(1, t.getName());
       statement.setDouble(2, t.getPrice());
       statement.setLong(3, t.getCategory().getId());
+      statement.setString(4, t.getSku());
 
       if (isUpdateProduct) {
-        statement.setLong(4, t.getId());
+        statement.setLong(5, t.getId());
       } else {
-        statement.setDate(4, t.getRecordDate());
+        statement.setDate(5, t.getRecordDate());
       }
       statement.executeUpdate();
     } catch (SQLException e) {

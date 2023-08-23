@@ -26,13 +26,14 @@ public class ConnectionExample {
                 java.util.Date date = new java.util.Date();
                 Category category = new Category();
                 category.setId(1L);
-                Product product = new Product(null, "Samsung s23 PRO", 16000.00, new Date(date.getTime()), category);
+                Product product = new Product(null, "Samsung s23 PRO", 16000.00, new Date(date.getTime()), category,
+                        "abc5678def");
                 repository.save(product);
                 repository.list().forEach(System.out::println);
 
                 System.out.println("=== EDIT PRODUCT ===");
                 Product updateProduct = new Product(4L, "Samsung Galaxy s23 PRO", 16000.00,
-                        null, category);
+                        null, category, "abc1234def");
                 repository.save(updateProduct);
                 repository.list().forEach(System.out::println);
 
