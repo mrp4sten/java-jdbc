@@ -15,8 +15,16 @@ public class ProductRepositoryImpl implements Repository<Product> {
 
   private Connection connection;
 
+  @Override
+  public void setConnection(Connection connection) {
+    this.connection = connection;
+  }
+
   public ProductRepositoryImpl(Connection connection) {
     this.connection = connection;
+  }
+
+  public ProductRepositoryImpl() {
   }
 
   private Product getProduct(ResultSet resultSet) throws SQLException {

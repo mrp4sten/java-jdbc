@@ -14,8 +14,16 @@ public class CategoryRepositoryImpl implements Repository<Category> {
 
   private Connection connection;
 
+  @Override
+  public void setConnection(Connection connection) {
+    this.connection = connection;
+  }
+
   public CategoryRepositoryImpl(Connection connection) {
     this.connection = connection;
+  }
+
+  public CategoryRepositoryImpl() {
   }
 
   private Category makeCategory(ResultSet resultSet) throws SQLException {
