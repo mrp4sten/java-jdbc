@@ -2,7 +2,6 @@ package com.mrp4sten.org.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 import com.mrp4sten.org.model.Category;
@@ -27,60 +26,91 @@ public class CatalogueService implements Service {
   public List<Product> listProduct() throws SQLException {
     try (Connection connection = DBConnection.getConnection()) {
       productRepository.setConnection(connection);
+      return productRepository.list();
     }
-
-    return Collections.emptyList();
   }
 
   @Override
   public List<Category> listCategory() throws SQLException {
     try (Connection connection = DBConnection.getConnection()) {
       categoryRepository.setConnection(connection);
+      return categoryRepository.list();
     }
-
-    return Collections.emptyList();
   }
 
   @Override
   public Product productById(Long id) throws SQLException {
     try (Connection connection = DBConnection.getConnection()) {
       productRepository.setConnection(connection);
+      return productRepository.byId(id);
     }
-
-    return null;
   }
 
   @Override
   public Category categoryById(Long id) throws SQLException {
     try (Connection connection = DBConnection.getConnection()) {
       categoryRepository.setConnection(connection);
+      return categoryById(id);
     }
-
-    return null;
   }
 
   @Override
   public Product saveProduct(Product product) throws SQLException {
     try (Connection connection = DBConnection.getConnection()) {
       productRepository.setConnection(connection);
-    }
+      if (connection.getAutoCommit()) {
+        connection.setAutoCommit(false);
+      }
 
-    return null;
+      Product newProduct = null;
+      try {
+        newProduct = productRepository.save(product);
+        connection.commit();
+      } catch (SQLException e) {
+        connection.rollback();
+        e.printStackTrace();
+      }
+
+      return newProduct;
+    }
   }
 
   @Override
   public Category saveCategory(Category category) throws SQLException {
     try (Connection connection = DBConnection.getConnection()) {
       categoryRepository.setConnection(connection);
-    }
+      if (connection.getAutoCommit()) {
+        connection.setAutoCommit(false);
+      }
 
-    return null;
+      Category newCategory = null;
+      try {
+        newCategory = categoryRepository.save(category);
+        connection.commit();
+      } catch (SQLException e) {
+        connection.rollback();
+        e.printStackTrace();
+      }
+
+      return newCategory;
+    }
   }
 
   @Override
   public void deleteProduct(Long id) throws SQLException {
     try (Connection connection = DBConnection.getConnection()) {
       productRepository.setConnection(connection);
+      if (connection.getAutoCommit()) {
+        connection.setAutoCommit(false);
+      }
+
+      try {
+        productRepository.remove(id);
+        connection.commit();
+      } catch (SQLException e) {
+        connection.rollback();
+        e.printStackTrace();
+      }
     }
 
   }
@@ -89,6 +119,17 @@ public class CatalogueService implements Service {
   public void deleteCategory(Long id) throws SQLException {
     try (Connection connection = DBConnection.getConnection()) {
       categoryRepository.setConnection(connection);
+      if (connection.getAutoCommit()) {
+        connection.setAutoCommit(false);
+      }
+
+      try {
+        categoryRepository.remove(id);
+        connection.commit();
+      } catch (SQLException e) {
+        connection.rollback();
+        e.printStackTrace();
+      }
     }
   }
 
@@ -97,6 +138,21 @@ public class CatalogueService implements Service {
     try (Connection connection = DBConnection.getConnection()) {
       productRepository.setConnection(connection);
       categoryRepository.setConnection(connection);
+
+      if (connection.getAutoCommit()) {
+        connection.setAutoCommit(false);
+      }
+
+      try {
+        Category newCategory = categoryRepository.save(category);
+        product.setCategory(newCategory);
+        productRepository.save(product);
+        connection.commit();
+      } catch (SQLException e) {
+        connection.rollback();
+        e.printStackTrace();
+      }
+
     }
   }
 
