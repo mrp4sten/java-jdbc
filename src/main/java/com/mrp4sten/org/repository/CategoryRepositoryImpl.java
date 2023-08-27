@@ -81,7 +81,7 @@ public class CategoryRepositoryImpl implements Repository<Category> {
       preparedStatement.executeUpdate();
 
       if (t.getId() == null) {
-        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
           if (resultSet.next()) {
             t.setId(resultSet.getLong(1));
           }
